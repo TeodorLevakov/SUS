@@ -1,6 +1,9 @@
 ﻿using SUS.HTTP;
 using System;
+using System.IO;
+using System.Linq;
 using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace MyFirstMvcApp
@@ -24,22 +27,42 @@ namespace MyFirstMvcApp
 
         static HttpResponse HomePage(HttpRequest request) 
         {
-            throw new NotImplementedException();
+            var responseHtml = "<h1>Welcome!</h1>" + request.Headers.FirstOrDefault(x => x.Name == "User-Agent")?.Value;
+            var responseBodyBytes = Encoding.UTF8.GetBytes(responseHtml);
+
+            var response = new HttpResponse("text/html", responseBodyBytes);
+
+            return response;
+
         }
 
         static HttpResponse Favicon(HttpRequest request)
         {
-            throw new NotImplementedException();
+            var fileBytes = File.ReadAllBytes("wwwroot/favico.ico");
+
+            var response = new HttpResponse("image/vnd.microsoft.icon", fileBytes);
+
+            return response;
         }
 
         static HttpResponse About(HttpRequest request)
         {
-            throw new NotImplementedException();
+            var responseHtml = "<h1>About...!</h1>";
+            var responseBodyBytes = Encoding.UTF8.GetBytes(responseHtml);
+
+            var response = new HttpResponse("text/html", responseBodyBytes);
+
+            return response;
         }
 
         static HttpResponse Login(HttpRequest request)
         {
-            throw new NotImplementedException();
+            var responseHtml = "<h1>Login...!</h1>";
+            var responseBodyBytes = Encoding.UTF8.GetBytes(responseHtml);
+
+            var response = new HttpResponse("text/html", responseBodyBytes);
+
+            return response;
         }
     }
 }

@@ -2,6 +2,12 @@
 {
     public class Cookie
     {
+        public Cookie(string name, string value)
+        {
+            this.Name = name;
+            this.Value = value;
+        }
+
         public Cookie(string cookieAsStr)
         {
             var cookieParts = cookieAsStr.Split(new char[] { '=' }, 2);
@@ -12,5 +18,10 @@
         public string Name { get; set; }
 
         public string Value { get; set; }
+
+        public override string ToString()
+        {
+            return $"{this.Name}={this.Value}";
+        }
     }
 }
