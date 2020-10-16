@@ -1,11 +1,12 @@
-﻿using MyFirstMvcApp.Controllers;
+﻿using BattleCards.Data;
+using Microsoft.EntityFrameworkCore;
 using SUS.HTTP;
 using SUS.MvcFramework;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MyFirstMvcApp
+namespace BattleCards
 {
     public class Startup : IMvcApplication
     {
@@ -16,6 +17,8 @@ namespace MyFirstMvcApp
 
         public void Configure(List<Route> routeTable)
         {
+            new ApplicationDbContext().Database.Migrate();
+
             //routeTable.Add(new Route("/", HttpMethod.Get, new HomeController().Index));
             //routeTable.Add(new Route("/home/about", HttpMethod.Get, new HomeController().About));
 

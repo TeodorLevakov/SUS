@@ -1,10 +1,13 @@
-﻿using SUS.HTTP;
+﻿using BattleCards.Data;
+using BattleCards.ViewModels;
+using SUS.HTTP;
 using SUS.MvcFramework;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
-namespace MyFirstMvcApp.Controllers
+namespace BattleCards.Controllers
 {
     public class CardsController : Controller
     {
@@ -13,9 +16,41 @@ namespace MyFirstMvcApp.Controllers
             return this.View();
         }
 
+        [HttpPost("/Cards/Add")]
+        public HttpResponse DoAdd() 
+        {
+            var dbContext = new ApplicationDbContext();
+
+            dbContext.Add(new Card
+            {
+                Attack = int.Parse(this.Request.FormData["attack"]),
+                Health = int.Parse(this.Request.FormData["health"]),
+                Description = this.Request.FormData["description"],
+                Name = this.Request.FormData["name"],
+                ImageUrl = this.Request.FormData["image"],
+                Keyword = this.Request.FormData["keyword"],
+            }) ;
+
+            dbContext.SaveChanges();
+
+            return this.Redirect("/");
+        }
+
         public HttpResponse All()
         {
-            return this.View();
+            var db = new ApplicationDbContext();
+
+            var cardsViewModel = db.Cards.Select(x => new CardViewModel 
+            { 
+                Name = x.Name,
+                Attack = x.Attack,
+                Health = x.Health,
+                ImageUrl = x.ImageUrl,
+                Type = x.Keyword,
+                Description = x.Description,
+            }).ToList();
+
+            return this.View(new AllCardsViewModel { Cards = cardsViewModel});
         }
 
         public HttpResponse Collection()

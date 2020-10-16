@@ -4,11 +4,11 @@ using System.Text;
 
 namespace BattleCards.ViewModels
 {
-    public class IndexViewModel
+    public class DoAddViewModel
     {
+        public int Attack { get; set; }
 
-        public int CurrentYear { get; set; }
 
-        public string Message { get; set; }
+        public int Health { get; set; }
     }
 }
