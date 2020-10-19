@@ -127,8 +127,21 @@ namespace ViewNamespace
                 .WithOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
                 .AddReferences(MetadataReference.CreateFromFile(typeof(object).Assembly.Location))
                 .AddReferences(MetadataReference.CreateFromFile(typeof(IView).Assembly.Location));
+           
             if (viewModel != null)
             {
+                if (viewModel.GetType().IsGenericType)
+                {
+                    var genericArguments = viewModel.GetType().GenericTypeArguments;
+
+                    foreach (var genericArgument in genericArguments)
+                    {
+                        compileResult = compileResult
+                            .AddReferences(MetadataReference.CreateFromFile(genericArgument.Assembly.Location));
+                    }
+                }
+
+
                 compileResult = compileResult
                     .AddReferences(MetadataReference.CreateFromFile(viewModel.GetType().Assembly.Location));
             }
@@ -138,7 +151,9 @@ namespace ViewNamespace
 
             foreach (var lib in libraries)
             {
-                compileResult = compileResult.AddReferences(MetadataReference.CreateFromFile(Assembly.Load(lib).Location));
+                compileResult = compileResult
+                    .AddReferences(MetadataReference.CreateFromFile(
+                        Assembly.Load(lib).Location));
             }
 
             compileResult = compileResult.AddSyntaxTrees(SyntaxFactory.ParseSyntaxTree(csharpCode));
