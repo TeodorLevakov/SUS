@@ -13,15 +13,20 @@ namespace BattleCards.Controllers
         [HttpGet("/")]
         public HttpResponse Index()
         {
-            var viewModel = new IndexViewModel();
-            viewModel.CurrentYear = DateTime.UtcNow.Year;
-            viewModel.Message = "Welcom to Battle Cards";
-
-            return this.View(viewModel);
+            if (this.IsUserSignedId())
+            {
+                return this.Redirect("/Card/All");
+            }
+            else
+            {
+                return this.View();
+            }
+            
         }
 
         public HttpResponse About()
         {
+            this.SignIn("teo");
             return this.View();
         }
     }

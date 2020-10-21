@@ -91,7 +91,7 @@ namespace SUS.HTTP
 
             foreach (var p in parameters)
             {
-                var parameterParts = p.Split('=');
+                var parameterParts = p.Split(new[] { '=' }, 2);
                 var name = parameterParts[0];
                 var value = WebUtility.UrlDecode(parameterParts[1]);
 

@@ -15,11 +15,11 @@ namespace SUS.MvcFramework.ViewEngine
     {
         //public object CHarpCompilation { get; private set; }
 
-        public string GetHtml(string templateCode, object viewModel)
+        public string GetHtml(string templateCode, object viewModel, string user)
         {
             var csharpCode = GenerateCSharpFromTemplate(templateCode, viewModel);
             IView executableObj = GenerateExecutableCode(csharpCode, viewModel);
-            var html = executableObj.ExecuteTamplate(viewModel);
+            var html = executableObj.ExecuteTamplate(viewModel, user);
 
             return html;
 
@@ -55,8 +55,9 @@ namespace ViewNamespace
 {
     public class ViewClass : IView
     {
-        public string ExecuteTamplate(object viewModel)
+        public string ExecuteTamplate(object viewModel, string user)
         {
+            var User = user;
             var Model = viewModel as " + typeOfModel + @";
 
             var html = new StringBuilder();

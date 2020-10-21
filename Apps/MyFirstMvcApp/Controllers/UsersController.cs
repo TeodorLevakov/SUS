@@ -14,15 +14,31 @@ namespace BattleCards.Controllers
             return this.View();
         }
 
+        [HttpPost("/Users/Login")]
+        public HttpResponse DoLogin() 
+        {
+            return this.Redirect("/");
+        }
         public HttpResponse Register()
         {
             return this.View();
         }
 
-        [HttpPost]
-        public HttpResponse DoLogin()
+        [HttpPost("/Users/Register")]
+        public HttpResponse DoRegister()
         {
             return this.Redirect("/");
+        }
+
+        public HttpResponse Logout() 
+        {
+            if (!this.IsUserSignedId())
+            {
+                return this.Error("Only jogged-in users can log-out");
+            }
+          
+                this.SignOut();
+                return this.Redirect("/");
         }
     }
 }
