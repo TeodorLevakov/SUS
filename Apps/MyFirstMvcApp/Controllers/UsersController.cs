@@ -12,11 +12,11 @@ namespace BattleCards.Controllers
 {
     public class UsersController : Controller
     {
-        private UsersService userService;
+        private readonly IUsersService usersService;
 
-        public UsersController()
+        public UsersController(IUsersService usersService)
         {
-            this.userService = new UsersService();
+            this.usersService = usersService;
         }
 
         public HttpResponse Login()
@@ -31,10 +31,15 @@ namespace BattleCards.Controllers
         [HttpPost("/Users/Login")]
         public HttpResponse DoLogin() 
         {
+            if (this.IsUserSignedIn())
+            {
+                return this.Redirect("/");
+            }
+
             var username = this.Request.FormData["username"];
             var password = this.Request.FormData["password"];
 
-            var userId = this.userService.GetUserId(username, password);
+            var userId = this.usersService.GetUserId(username, password);
 
             if (userId == null)
             {
@@ -57,6 +62,11 @@ namespace BattleCards.Controllers
         [HttpPost("/Users/Register")]
         public HttpResponse DoRegister()
         {
+            if (this.IsUserSignedIn())
+            {
+                return this.Redirect("/");
+            }
+
             var username = this.Request.FormData["username"];
             var email = this.Request.FormData["email"];
             var password = this.Request.FormData["password"];
@@ -84,16 +94,16 @@ namespace BattleCards.Controllers
             {
                 return this.Error("Password should be the same.");
             }
-            if (!this.userService.IsUsernameAvailable(username))
+            if (!this.usersService.IsUsernameAvailable(username))
             {
                 return this.Error("Username already taken.");
             }
-            if (!this.userService.IsEmailAvailable(email))
+            if (!this.usersService.IsEmailAvailable(email))
             {
                 return this.Error("Email already taken");
             }
 
-            this.userService.CreateUser(username, email, password);
+            this.usersService.CreateUser(username, email, password);
 
             return this.Redirect("/Users/Login");
         }
