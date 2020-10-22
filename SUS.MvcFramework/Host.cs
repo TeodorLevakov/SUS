@@ -38,20 +38,20 @@ namespace SUS.MvcFramework
             var controllerTypes = application.GetType().Assembly.GetTypes()
                 .Where(x => x.IsClass && !x.IsAbstract && x.IsSubclassOf(typeof(Controller)));
 
-            foreach (var controllerT in controllerTypes)
+            foreach (var controllerType in controllerTypes)
             {
                 //Console.WriteLine(controllerT.Name);
 
-                var methods = controllerT.GetMethods()
-                    .Where(x => x.IsPublic && !x.IsStatic && x.DeclaringType == controllerT &&
+                var methods = controllerType.GetMethods()
+                    .Where(x => x.IsPublic && !x.IsStatic && x.DeclaringType == controllerType &&
                     !x.IsAbstract && !x.IsConstructor && !x.IsSpecialName);
 
-                foreach (var m in methods)
+                foreach (var method in methods)
                 {
-                    var url = "/" + controllerT.Name.Replace("Controller", string.Empty)
-                        + "/" + m.Name;
+                    var url = "/" + controllerType.Name.Replace("Controller", string.Empty)
+                        + "/" + method.Name;
 
-                    var attribute = m.GetCustomAttributes(false)
+                    var attribute = method.GetCustomAttributes(false)
                         .Where(x => x.GetType().IsSubclassOf(typeof(BaseHttpAttribute)))
                         .FirstOrDefault() as BaseHttpAttribute;
 
@@ -67,19 +67,45 @@ namespace SUS.MvcFramework
                         url = attribute.Url;
                     }
 
-                    routeTable.Add(new Route(url, httpMethod, (request) => 
-                    {
-                        var instance = serviceCollection.CreateInstance(controllerT) as Controller;
-                        instance.Request = request;
-
-                        var responce = m.Invoke(instance, new object [] { }) as HttpResponse;
-
-                        return responce;
-                    }));
+                    routeTable.Add(new Route(url, httpMethod, (request) => ExecuteAction(request, controllerType, method, serviceCollection)));
                   
                 }
             
             }
+        }
+
+        private static HttpResponse ExecuteAction(HttpRequest request, Type controllerType, MethodInfo action, IServiceCollection serviceCollection) 
+        {
+            var instance = serviceCollection.CreateInstance(controllerType) as Controller;
+            instance.Request = request;
+
+            var arguments = new List<object>();
+            var parameters = action.GetParameters();
+
+            foreach (var parameter in parameters)
+            {
+                var paramValue = GetParameterFropmRequest(request, parameter.Name);
+                arguments.Add(paramValue);
+
+            }
+
+            var responce = action.Invoke(instance, arguments.ToArray()) as HttpResponse;
+
+            return responce;
+        }
+
+        private static string GetParameterFropmRequest(HttpRequest request, string parameterName) 
+        {
+            if (request.FormData.ContainsKey(parameterName))
+            {
+                return request.FormData[parameterName];
+            }
+
+            if (request.QueryData.ContainsKey(parameterName))
+            {
+                return request.QueryData[parameterName];
+            }
+            return null;
         }
 
         private static void AutoRegisterStaticFile(List<Route> routeTable) 

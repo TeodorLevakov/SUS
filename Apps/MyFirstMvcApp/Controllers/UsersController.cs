@@ -60,17 +60,17 @@ namespace BattleCards.Controllers
         }
 
         [HttpPost("/Users/Register")]
-        public HttpResponse DoRegister()
+        public HttpResponse DoRegister(string username, string email, string password, string confirmPassword)
         {
             if (this.IsUserSignedIn())
             {
                 return this.Redirect("/");
             }
 
-            var username = this.Request.FormData["username"];
-            var email = this.Request.FormData["email"];
-            var password = this.Request.FormData["password"];
-            var confirmPass = this.Request.FormData["confirmPassword"];
+            //var username = this.Request.FormData["username"];
+            //var email = this.Request.FormData["email"];
+            //var password = this.Request.FormData["password"];
+            //var confirmPass = this.Request.FormData["confirmPassword"];
 
             if (username == null || username.Length < 5 || username.Length > 20)
             {
@@ -90,7 +90,7 @@ namespace BattleCards.Controllers
                 return this.Error("Invalid password.");
             }
 
-            if (password != confirmPass)
+            if (password != confirmPassword)
             {
                 return this.Error("Password should be the same.");
             }
