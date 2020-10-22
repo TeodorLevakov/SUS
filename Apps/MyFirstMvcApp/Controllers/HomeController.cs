@@ -13,7 +13,7 @@ namespace BattleCards.Controllers
         [HttpGet("/")]
         public HttpResponse Index()
         {
-            if (this.IsUserSignedId())
+            if (this.IsUserSignedIn())
             {
                 return this.Redirect("/Card/All");
             }
@@ -24,10 +24,5 @@ namespace BattleCards.Controllers
             
         }
 
-        public HttpResponse About()
-        {
-            this.SignIn("teo");
-            return this.View();
-        }
     }
 }

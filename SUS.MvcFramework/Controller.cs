@@ -87,7 +87,7 @@ namespace SUS.MvcFramework
             this.Request.Session[UserIdSessionName] = null;
         }
 
-        protected bool IsUserSignedId() =>
+        protected bool IsUserSignedIn() =>
             this.Request.Session.ContainsKey(UserIdSessionName) &&
             this.Request.Session[UserIdSessionName] != null;
 

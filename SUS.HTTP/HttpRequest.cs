@@ -86,7 +86,7 @@ namespace SUS.HTTP
             }
 
 
-            this.Body = sb.ToString();
+            this.Body = sb.ToString().TrimEnd('\n', '\r');
             var parameters = this.Body.Split(new char[] { '&' }, StringSplitOptions.RemoveEmptyEntries);
 
             foreach (var p in parameters)
