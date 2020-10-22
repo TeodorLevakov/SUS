@@ -84,8 +84,26 @@ namespace SUS.MvcFramework
 
             foreach (var parameter in parameters)
             {
-                var paramValue = GetParameterFropmRequest(request, parameter.Name);
-                arguments.Add(paramValue);
+                var httpParamValue = GetParameterFropmRequest(request, parameter.Name);
+
+                var parameterValue = Convert.ChangeType(httpParamValue, parameter.ParameterType);
+
+                if (parameterValue == null && parameter.ParameterType != typeof(string))
+                {
+                    parameterValue = Activator.CreateInstance(parameter.ParameterType);
+                    var properties = parameter.ParameterType.GetProperties();
+
+                    foreach (var property in properties)
+                    {
+                        var propertyHttpParamValue = GetParameterFropmRequest(request, property.Name);
+
+                        var propertyParameterValue = Convert.ChangeType(propertyHttpParamValue, property.PropertyType);
+
+                        property.SetValue(parameterValue, propertyParameterValue);
+                    }
+                }
+
+                arguments.Add(parameterValue);
 
             }
 
@@ -96,14 +114,18 @@ namespace SUS.MvcFramework
 
         private static string GetParameterFropmRequest(HttpRequest request, string parameterName) 
         {
-            if (request.FormData.ContainsKey(parameterName))
+            parameterName = parameterName.ToLower();
+
+            if (request.FormData.Any(x => x.Key.ToLower() == parameterName))
             {
-                return request.FormData[parameterName];
+                return request.FormData
+                    .FirstOrDefault(x => x.Key.ToLower() == parameterName).Value;
             }
 
-            if (request.QueryData.ContainsKey(parameterName))
+            if (request.QueryData.Any(x => x.Key.ToLower() == parameterName))
             {
-                return request.QueryData[parameterName];
+                return request.QueryData
+                    .FirstOrDefault(x => x.Key.ToLower() == parameterName).Value;
             }
             return null;
         }
