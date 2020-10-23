@@ -27,6 +27,8 @@ namespace SUS.MvcFramework
             {
                 Console.WriteLine($"{rout.Method} - {rout.Path}");
             }
+            Console.WriteLine();
+            Console.WriteLine("Requests");
 
             IHttpServer server = new HttpServer(routeTable);
 

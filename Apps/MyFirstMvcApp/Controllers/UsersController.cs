@@ -29,7 +29,7 @@ namespace BattleCards.Controllers
         }
 
         [HttpPost("/Users/Login")]
-        public HttpResponse DoLogin(string username, string password) 
+        public HttpResponse Login(string username, string password) 
         {
             if (this.IsUserSignedIn())
             {
@@ -57,7 +57,7 @@ namespace BattleCards.Controllers
         }
 
         [HttpPost("/Users/Register")]
-        public HttpResponse DoRegister(string username, string email, string password, string confirmPassword)
+        public HttpResponse Register(string username, string email, string password, string confirmPassword)
         {
             if (this.IsUserSignedIn())
             {

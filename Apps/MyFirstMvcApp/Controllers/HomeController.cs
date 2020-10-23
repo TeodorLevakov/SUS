@@ -15,12 +15,11 @@ namespace BattleCards.Controllers
         {
             if (this.IsUserSignedIn())
             {
-                return this.Redirect("/Card/All");
+                return this.Redirect("/Cards/All");
             }
-            else
-            {
+            
                 return this.View();
-            }
+            
             
         }
 
