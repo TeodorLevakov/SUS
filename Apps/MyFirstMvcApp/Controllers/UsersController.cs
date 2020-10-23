@@ -1,4 +1,5 @@
 ﻿using BattleCards.Services;
+using BattleCards.ViewModels.Users;
 using SUS.HTTP;
 using SUS.MvcFramework;
 using System;
@@ -57,7 +58,7 @@ namespace BattleCards.Controllers
         }
 
         [HttpPost("/Users/Register")]
-        public HttpResponse Register(string username, string email, string password, string confirmPassword)
+        public HttpResponse Register(RegisterInputModel input)
         {
             if (this.IsUserSignedIn())
             {
@@ -69,38 +70,38 @@ namespace BattleCards.Controllers
             //var password = this.Request.FormData["password"];
             //var confirmPass = this.Request.FormData["confirmPassword"];
 
-            if (username == null || username.Length < 5 || username.Length > 20)
+            if (input.Username == null || input.Username.Length < 5 || input.Username.Length > 20)
             {
                 return this.Error("Invalid username.");
             }
-            if (!Regex.IsMatch(username, @"^[a-zA-Z0-9]+$"))
+            if (!Regex.IsMatch(input.Username, @"^[a-zA-Z0-9]+$"))
             {
                 return this.Error("Invalid username. Only alphanum-chars are allowed.");
             }
-            if (string.IsNullOrWhiteSpace(email) || !new EmailAddressAttribute().IsValid(email))
+            if (string.IsNullOrWhiteSpace(input.Email) || !new EmailAddressAttribute().IsValid(input.Email))
             {
                 return this.Error("Invalid email.");
             }
 
-            if (password == null || password.Length < 6 || password.Length > 20)
+            if (input.Password == null || input.Password.Length < 6 || input.Password.Length > 20)
             {
                 return this.Error("Invalid password.");
             }
 
-            if (password != confirmPassword)
+            if (input.Password != input.ConfirmPassword)
             {
                 return this.Error("Password should be the same.");
             }
-            if (!this.usersService.IsUsernameAvailable(username))
+            if (!this.usersService.IsUsernameAvailable(input.Username))
             {
                 return this.Error("Username already taken.");
             }
-            if (!this.usersService.IsEmailAvailable(email))
+            if (!this.usersService.IsEmailAvailable(input.Email))
             {
                 return this.Error("Email already taken");
             }
 
-            this.usersService.CreateUser(username, email, password);
+            this.usersService.CreateUser(input.Username, input.Email, input.Password);
 
             return this.Redirect("/Users/Login");
         }
